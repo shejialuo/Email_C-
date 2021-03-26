@@ -4,7 +4,7 @@
 class Monitor {
 private:
     int monitorWindowDimension;
-    int numberOf
+    int numberOf;
 };
 
 

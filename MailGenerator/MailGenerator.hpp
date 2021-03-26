@@ -1,10 +1,16 @@
 #ifndef MAILGENERATOR_HPP
 #define MAILGENERATOR_HPP
 
+#include <vector>
+using namespace std;
+
 class MailGenerator {
 private:
-    static int 
+    int messageCounter;
+    vector<int> numberOfMessagesRequiredInAMonitorWindow;
+    int monitoringWindowDimension;
 public:
+    MailGenerator();
     void run();
 };
 
