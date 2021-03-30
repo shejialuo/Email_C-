@@ -14,12 +14,9 @@ private:
     double totalTime;
     int totalMessages;
 public:
-
+    //! 构造函数
     Database();
-    /* 本函数实现三个过程：
-        ! 定义一个新的类型为Results数据
-        !  
-    */
+    //! 插入消息的基本信息
     void insertMessageInformation(string messageId, int attachmentsNumber);
     //! 插入Header分析结果，并返回numberOfActivityWaiting
     int insertHeadersAnalysisResults(HeaderAnalysis res);
@@ -39,10 +36,6 @@ public:
     double getAverageAnalysisTime();
     //! 重置平均分析时间
     void resetAverageAnalysisTime();
-
-
-
-    
 };
 
 #endif // DATABASE_HPP

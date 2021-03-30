@@ -6,6 +6,10 @@
 struct HeaderAnalysis {
     std::string haResults;
     std::string haMessagedId;
+    HeaderAnalysis(std::string results, std::string messageId) {
+        haResults = results;
+        haMessagedId = messageId;
+    }
 };
 
 #endif // HEADERANALYSIS_HPP

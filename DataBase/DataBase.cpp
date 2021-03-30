@@ -1,8 +1,34 @@
 #include "DataBase.hpp"
 
-Results Database::getMessageResults(string messageId) {
-    
+Database::Database() {
+    actualMessage = {};
+    numberOfMessageInTheMonitoringWindow = 0;
+    startAnalysisTimes = {};
+    totalTime = 0;
+    totalMessages = 0;
 }
+
+
+void Database::insertMessageInformation(string messageId, 
+    int attachmentNumber) {
+    int numberOfActivityWaiting = 3 + attachmentNumber;
+    
+  
+    ++numberOfMessageInTheMonitoringWindow;
+
+}
+
+int Database::insertHeadersAnalysisResults(HeaderAnalysis res) {
+    int numberOfActivityWaiting = -1;
+}
+
+int Database::insertAttachmentAnalysisResults(AttachmentAnalysis res) {
+    int numberOfActivityWaiting = -1;
+
+}
+
+
+
 
 int Database::getNumberOfMessagesInTheMonitoringWindow() {
     return numberOfMessageInTheMonitoringWindow;

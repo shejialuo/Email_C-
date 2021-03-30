@@ -6,6 +6,10 @@
 struct TextAnalysis {
     std::string laResults;
     std::string laMessageId;
+    TextAnalysis(std::string results, std::string messageId) {
+        laResults = results;
+        laMessageId = messageId;
+    }
 };
 
 #endif // TEXTANALYSIS_HPP

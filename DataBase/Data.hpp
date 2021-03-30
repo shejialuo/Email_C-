@@ -3,27 +3,11 @@
 
 #include <string>
 #include <unordered_set>
+#include "../Data/AttachmentAnalysis.hpp"
+#include "../Data/TextAnalysis.hpp"
+#include "../Data/HeaderAnalysis.hpp"
+#include "../Data/LinksAnalysis.hpp"
 using namespace std;
-
-struct HeaderAnalysis {
-    string haResults;
-    string haMessageId;    
-};
-
-struct LinksAnalysis {
-    string laResults;
-    string laMessageId;
-};
-
-struct TextAnalysis {
-    string taResults;
-    string taMessageId;
-};
-
-struct AttachmentAnalysis {
-    string aaResults;
-    string aaMessageId;
-};
 
 struct Results {    
     int numberOfActivityWaiting;
@@ -31,6 +15,14 @@ struct Results {
     LinksAnalysis linksAnalysisResults;
     TextAnalysis textAnalysisResults;
     unordered_multiset<AttachmentAnalysis> attachmentAnalysisResults;
+    Results(
+        int num, HeaderAnalysis haResults,
+        LinksAnalysis laResults, TextAnalysis taResults,
+        unordered_multiset<AttachmentAnalysis> aaResults)
+        : numberOfActivityWaiting(num),
+          headerAnalysisResults(haResults), linksAnalysisResults(laResults),
+          textAnalysisResults(taResults), attachmentAnalysisResults(aaResults){}
+
 };
 
 #endif // DATA_HPP

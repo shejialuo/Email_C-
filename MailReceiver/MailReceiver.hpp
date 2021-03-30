@@ -1,6 +1,0 @@
-#ifndef MAILRECEIVER_HPP
-#define MAILRECEIVER_HPP
-
-
-
-#endif // MAILRECEIVER_HPP

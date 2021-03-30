@@ -1,0 +1,100 @@
+Date : 2021-03-30 22:23:43
+Directory : /home/shejialuo/Projects/Email_Microservices
+Total : 49 files,  1054 codes, 99 comments, 190 blanks, all 1343 lines
+
+Languages
++--------------+------------+------------+------------+------------+------------+
+| language     | files      | code       | comment    | blank      | total      |
++--------------+------------+------------+------------+------------+------------+
+| C++          |         46 |      1,046 |         96 |        187 |      1,329 |
+| Shell Script |          3 |          8 |          3 |          3 |         14 |
++--------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                               | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                  |         49 |      1,054 |         99 |        190 |      1,343 |
+| AttachmentAnalysis                                                                                                 |          7 |        181 |         11 |         25 |        217 |
+| AttachmentAnalysis/AttachmentManager                                                                               |          1 |         22 |          5 |          4 |         31 |
+| AttachmentAnalysis/AttachmentManager/load_balancer                                                                 |          1 |         22 |          5 |          4 |         31 |
+| AttachmentAnalysis/VirusScanner                                                                                    |          6 |        159 |          6 |         21 |        186 |
+| AttachmentAnalysis/VirusScanner/load_balancer                                                                      |          4 |        105 |          6 |         14 |        125 |
+| AttachmentAnalysis/VirusScanner/main                                                                               |          2 |         54 |          0 |          7 |         61 |
+| Data                                                                                                               |          5 |         57 |          0 |         15 |         72 |
+| DataBase                                                                                                           |          3 |         87 |         11 |         23 |        121 |
+| HeaderAnalyser                                                                                                     |          6 |        162 |         11 |         19 |        192 |
+| HeaderAnalyser/load_balancer                                                                                       |          3 |        101 |          8 |         12 |        121 |
+| HeaderAnalyser/main                                                                                                |          3 |         61 |          3 |          7 |         71 |
+| Lib                                                                                                                |          4 |        117 |         23 |         20 |        160 |
+| LinkAnalyser                                                                                                       |          1 |         22 |          5 |          5 |         32 |
+| LinkAnalyser/load_balancer                                                                                         |          1 |         22 |          5 |          5 |         32 |
+| MailGenerator                                                                                                      |          4 |         65 |          8 |          9 |         82 |
+| MessageAnalyser                                                                                                    |          2 |         48 |          5 |          9 |         62 |
+| MessageAnalyser/load_balancer                                                                                      |          1 |         41 |          5 |          7 |         53 |
+| MessageParser                                                                                                      |          5 |        109 |         14 |         27 |        150 |
+| MessageParser/load_balancer                                                                                        |          3 |         91 |          8 |         14 |        113 |
+| MessageParser/main                                                                                                 |          2 |         18 |          6 |         13 |         37 |
+| MessageReceiver                                                                                                    |          4 |         46 |          5 |          7 |         58 |
+| Monitor                                                                                                            |          1 |          8 |          0 |          3 |         11 |
+| Test                                                                                                               |          3 |         53 |          0 |          6 |         59 |
+| TextAnalyser                                                                                                       |          4 |         99 |          6 |         22 |        127 |
+| TextAnalyser/load_balancer                                                                                         |          2 |         81 |          5 |         13 |         99 |
+| TextAnalyser/main                                                                                                  |          2 |         18 |          1 |          9 |         28 |
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| filename                                                                                                           | language     | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/AttachmentManager/load_balancer/AMLoadBalancer.cpp | C++          |         22 |          5 |          4 |         31 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/load_balancer/VSLoadBalancer.cpp      | C++          |         72 |          0 |          6 |         78 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/load_balancer/VSLoadBalancer.hpp      | C++          |         23 |          5 |          5 |         33 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/load_balancer/build.sh                | Shell Script |          4 |          1 |          2 |          7 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/load_balancer/main.cpp                | C++          |          6 |          0 |          1 |          7 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/main/VirusScanner.cpp                 | C++          |         39 |          0 |          4 |         43 |
+| /home/shejialuo/Projects/Email_Microservices/AttachmentAnalysis/VirusScanner/main/VirusScanner.hpp                 | C++          |         15 |          0 |          3 |         18 |
+| /home/shejialuo/Projects/Email_Microservices/Data/AttachmentAnalysis.hpp                                           | C++          |         12 |          0 |          4 |         16 |
+| /home/shejialuo/Projects/Email_Microservices/Data/HeaderAnalysis.hpp                                               | C++          |         12 |          0 |          4 |         16 |
+| /home/shejialuo/Projects/Email_Microservices/Data/LinksAnalysis.hpp                                                | C++          |         12 |          0 |          3 |         15 |
+| /home/shejialuo/Projects/Email_Microservices/Data/MessageField.hpp                                                 | C++          |          9 |          0 |          1 |         10 |
+| /home/shejialuo/Projects/Email_Microservices/Data/TextAnalysis.hpp                                                 | C++          |         12 |          0 |          3 |         15 |
+| /home/shejialuo/Projects/Email_Microservices/DataBase/Data.hpp                                                     | C++          |         24 |          0 |          4 |         28 |
+| /home/shejialuo/Projects/Email_Microservices/DataBase/DataBase.cpp                                                 | C++          |         36 |          0 |         16 |         52 |
+| /home/shejialuo/Projects/Email_Microservices/DataBase/DataBase.hpp                                                 | C++          |         27 |         11 |          3 |         41 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/load_balancer/HALoadBalancer.cpp                       | C++          |         72 |          0 |          6 |         78 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/load_balancer/HALoadBalancer.hpp                       | C++          |         23 |          5 |          5 |         33 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/load_balancer/main.cpp                                 | C++          |          6 |          3 |          1 |         10 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/main/HeaderAnalyser.cpp                                | C++          |         40 |          0 |          4 |         44 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/main/HeaderAnalyser.hpp                                | C++          |         15 |          3 |          3 |         21 |
+| /home/shejialuo/Projects/Email_Microservices/HeaderAnalyser/main/main.cpp                                          | C++          |          6 |          0 |          0 |          6 |
+| /home/shejialuo/Projects/Email_Microservices/Lib/Client.cpp                                                        | C++          |         30 |          0 |          7 |         37 |
+| /home/shejialuo/Projects/Email_Microservices/Lib/Client.hpp                                                        | C++          |         27 |         11 |          3 |         41 |
+| /home/shejialuo/Projects/Email_Microservices/Lib/Server.cpp                                                        | C++          |         33 |          0 |          7 |         40 |
+| /home/shejialuo/Projects/Email_Microservices/Lib/Server.hpp                                                        | C++          |         27 |         12 |          3 |         42 |
+| /home/shejialuo/Projects/Email_Microservices/LinkAnalyser/load_balancer/LALoadBalancer.hpp                         | C++          |         22 |          5 |          5 |         32 |
+| /home/shejialuo/Projects/Email_Microservices/MailGenerator/MailGenerator.cpp                                       | C++          |         42 |          2 |          3 |         47 |
+| /home/shejialuo/Projects/Email_Microservices/MailGenerator/MailGenerator.hpp                                       | C++          |         15 |          5 |          5 |         25 |
+| /home/shejialuo/Projects/Email_Microservices/MailGenerator/build.sh                                                | Shell Script |          2 |          1 |          0 |          3 |
+| /home/shejialuo/Projects/Email_Microservices/MailGenerator/main.cpp                                                | C++          |          6 |          0 |          1 |          7 |
+| /home/shejialuo/Projects/Email_Microservices/MessageAnalyser/MessageAnalyser.hpp                                   | C++          |          7 |          0 |          2 |          9 |
+| /home/shejialuo/Projects/Email_Microservices/MessageAnalyser/load_balancer/MALoadBalancer.hpp                      | C++          |         41 |          5 |          7 |         53 |
+| /home/shejialuo/Projects/Email_Microservices/MessageParser/load_balancer/MPLoadBalancer.cpp                        | C++          |         62 |          0 |          7 |         69 |
+| /home/shejialuo/Projects/Email_Microservices/MessageParser/load_balancer/MPLoadBalancer.hpp                        | C++          |         23 |          5 |          6 |         34 |
+| /home/shejialuo/Projects/Email_Microservices/MessageParser/load_balancer/main.cpp                                  | C++          |          6 |          3 |          1 |         10 |
+| /home/shejialuo/Projects/Email_Microservices/MessageParser/main/MessageParser.cpp                                  | C++          |          5 |          5 |          9 |         19 |
+| /home/shejialuo/Projects/Email_Microservices/MessageParser/main/MessageParser.hpp                                  | C++          |         13 |          1 |          4 |         18 |
+| /home/shejialuo/Projects/Email_Microservices/MessageReceiver/MessageReceiver.cpp                                   | C++          |         25 |          1 |          2 |         28 |
+| /home/shejialuo/Projects/Email_Microservices/MessageReceiver/MessageReceiver.hpp                                   | C++          |         13 |          3 |          3 |         19 |
+| /home/shejialuo/Projects/Email_Microservices/MessageReceiver/build.sh                                              | Shell Script |          2 |          1 |          1 |          4 |
+| /home/shejialuo/Projects/Email_Microservices/MessageReceiver/main.cpp                                              | C++          |          6 |          0 |          1 |          7 |
+| /home/shejialuo/Projects/Email_Microservices/Monitor/Monitor.hpp                                                   | C++          |          8 |          0 |          3 |         11 |
+| /home/shejialuo/Projects/Email_Microservices/Test/test.cpp                                                         | C++          |         13 |          0 |          2 |         15 |
+| /home/shejialuo/Projects/Email_Microservices/Test/test2.cpp                                                        | C++          |         31 |          0 |          3 |         34 |
+| /home/shejialuo/Projects/Email_Microservices/Test/test3.cpp                                                        | C++          |          9 |          0 |          1 |         10 |
+| /home/shejialuo/Projects/Email_Microservices/TextAnalyser/load_balancer/TALoadBalancer.cpp                         | C++          |         58 |          0 |          8 |         66 |
+| /home/shejialuo/Projects/Email_Microservices/TextAnalyser/load_balancer/TALoadBalancer.hpp                         | C++          |         23 |          5 |          5 |         33 |
+| /home/shejialuo/Projects/Email_Microservices/TextAnalyser/main/TextAnalyser.cpp                                    | C++          |          8 |          1 |          3 |         12 |
+| /home/shejialuo/Projects/Email_Microservices/TextAnalyser/main/TextAnalyser.hpp                                    | C++          |         10 |          0 |          6 |         16 |
+| Total                                                                                                              |              |      1,054 |         99 |        190 |      1,343 |
++--------------------------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+

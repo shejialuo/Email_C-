@@ -5,7 +5,11 @@
 
 struct LinksAnalysis {
     std::string laResults;
-    std::string laMessageId;    
+    std::string laMessageId;
+    LinksAnalysis(std::string results, std::string messageId) {
+        laResults = results;
+        laMessageId = messageId;
+    }
 };
 
 #endif // LINKSANALYSIS_HPP
