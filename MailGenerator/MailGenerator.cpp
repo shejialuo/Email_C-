@@ -3,7 +3,6 @@
 #include <unistd.h>
 using namespace std;
 
-
 MailGenerator::MailGenerator() {
     messageCounter = 0;
     numberOfMessagesRequiredInAMonitorWindow = {
@@ -26,12 +25,10 @@ void MailGenerator::run() {
         i = (i + 1) % numberOfMessagesRequiredInAMonitorWindow.size();
         double timeBetweenTwoConsecutiveMessages = 
             static_cast<double>(monitoringWindowDimension) /static_cast<double>(currentNumberOfMessageRequired);
-        //* 测试
-        cout << currentNumberOfMessageRequired;
         int j = 0;
         while(j < currentNumberOfMessageRequired) {
             string mailData = "Message" + to_string(messageCounter);
-            // TODO: ip地址待修改
+            // TODO: ip地址为MessageReceiver
             Client newClient("127.0.0.1", 8000, 8001);
             newClient.socket();
             newClient.bind();

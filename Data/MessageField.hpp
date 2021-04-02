@@ -5,6 +5,7 @@ struct MessageFields {
     std::string headers;
     std::string sender;
     std::string messageHeader;
-    std::unordered_set<std::string> links;
-    std::unordered_set<std::string> attachments;
+    std::string messageBody;
+    std::unordered_multiset<std::string> links;
+    std::unordered_multiset<std::string> attachments;
 };

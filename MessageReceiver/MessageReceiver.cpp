@@ -4,7 +4,7 @@ MessageReceiver::MessageReceiver(int port): MRServer(port) {}
 
 void MessageReceiver::newMessage(string mailData) {
     std::cout << mailData;
-    //TODO: IP待修改
+    //TODO: IP地址修改为MessggeParser_LoadBalancer
     Client newClient("127.0.0.1", 8000,8001);
     newClient.socket();
     newClient.bind();

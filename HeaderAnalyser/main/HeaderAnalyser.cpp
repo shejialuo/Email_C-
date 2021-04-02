@@ -5,6 +5,7 @@
 #include <sstream>
 
 HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
+   //TODO: 修改IP地址为HeaderAnalyser_LoadBalancer
    Client newClient("127.0.0.1",8000,8001);
    newClient.socket();
    newClient.bind();
@@ -15,7 +16,15 @@ HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
 }
 
 void HeaderAnalyser::analyzeHeaders(string headers, string messageId) {
-
+   //TODO: 修改IP地址为MessageAnalyser_LoadBalancer
+   Client newClient("127.0.0.1",8000,8001);
+   newClient.socket();
+   newClient.bind();
+   newClient.connect();
+   string headerAnalyisisResult = "headerAnalyisisResult";
+   
+   newClient.send(headerAnalyisisResult); 
+   newClient.close();
 }
 
 void HeaderAnalyser::runServer() {

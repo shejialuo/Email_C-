@@ -8,7 +8,6 @@ MessageParser_LoadBalancer::MessageParser_LoadBalancer(
     int serverPort): MPLBServer(serverPort) {
     instancesConnected = {};
     nextInstance = -1;
-    
 }
 
 void MessageParser_LoadBalancer::connectInstance(

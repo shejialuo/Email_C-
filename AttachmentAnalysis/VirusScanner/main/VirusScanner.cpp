@@ -1,9 +1,12 @@
 #include "VirusScanner.hpp"
+#include "../../Data/AttachmentAnalysis.hpp"
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <cstdlib>
 
 VirusScanner::VirusScanner(int serverPort): VSServer(serverPort) {
+   //TODO: 修改ip地址为VirusScanner_LoadBalancer。
    Client newClient("127.0.0.1",8000,8001);
    newClient.socket();
    newClient.bind();
@@ -13,8 +16,23 @@ VirusScanner::VirusScanner(int serverPort): VSServer(serverPort) {
    newClient.close();
 }
 
-void VirusScanner::scanAttachment(string headers, string messageId) {
-    
+void VirusScanner::scanAttachment(string attachment, string messageId) {
+   bool virusFound = rand() % 5 == 0;
+   if(virusFound) {
+      AttachmentAnalysis res("VirusFound from VirusScanner in attachment: " + attachment,
+                              messageId);
+      //TODO: 发送AttachmentAnalysis至messageAnalyserLoadBalancer
+   }
+   else {
+      //TODO: 修改ip地址为attachmentManager_LoadBalancer。
+      Client newClient("127.0.0.1",8000,8001);
+      newClient.socket();
+      newClient.bind();
+      newClient.connect();
+      string combined = attachment + " " + messageId;
+      newClient.send(combined); 
+      newClient.close();
+   }
 }
 
 void VirusScanner::runServer() {
