@@ -2,8 +2,8 @@
 #define MAILGENERATOR_HPP
 
 #include "../Lib/Client.hpp"
-
 #include <vector>
+
 using namespace std;
 
 class MailGenerator {

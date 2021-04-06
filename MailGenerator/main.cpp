@@ -3,5 +3,5 @@
 int main() {
     MailGenerator mailGenerator{};
     mailGenerator.run();
-    return 0;
+    exit(0);
 }
