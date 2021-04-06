@@ -1,11 +1,12 @@
 #include "MessageReceiver.hpp"
 #include <iostream>
+#include <chrono>
+#include <fstream>
+
 MessageReceiver::MessageReceiver(int port): MRServer(port) {}
 
 void MessageReceiver::newMessage(string mailData) {
-    std::cout << mailData;
-    //TODO: IP地址修改为MessggeParser_LoadBalancer
-    Client newClient("127.0.0.1", 8000,8001);
+    Client newClient("192.168.82.110", 8000,8001);
     newClient.socket();
     newClient.bind();
     newClient.connect();
@@ -16,13 +17,18 @@ void MessageReceiver::newMessage(string mailData) {
 void MessageReceiver::runServer() {
     MRServer.socket();
     MRServer.bind();
-    MRServer.listen(500);
+    MRServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
+
     while(true) {
         MRServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(MRServer.getClientAddr().sin_addr));
-        string messageInfo = MRServer.recv();
-        std::cout << messageInfo << std::endl;
+        std::string messageInfo = MRServer.recv();
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = stt + " " + messageInfo;
+        ofile << logString << std::endl;
         newMessage(messageInfo);
     }
 }
