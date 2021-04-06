@@ -2,13 +2,14 @@
 #include <cstdlib>
 #include <unordered_set>
 #include <iostream>
+#include <fstream>
+#include <chrono>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
 MessageParser::MessageParser(int serverPort): MPServer(serverPort) {
-   //TODO: 修改IP地址为MessageParser_LoadBalancer
-   Client newClient("127.0.0.1",8000,8001);
+   Client newClient("192.168.82.110",8000,8001);
    newClient.socket();
    newClient.bind();
    newClient.connect();
@@ -19,25 +20,50 @@ MessageParser::MessageParser(int serverPort): MPServer(serverPort) {
 
 void MessageParser::headerAnalyserNewRequest(
     string header, string messageId) {
-    //TODO: 修改IP地址为HeaderAnalyser_LoadBalancer
-   Client newClient("127.0.0.1",8000,8001);
-   newClient.socket();
-   newClient.bind();
-   newClient.connect();
-   string combinedString = header + " " + messageId;
-   newClient.send(combinedString); 
-   newClient.close();
+    Client newClient("192.168.84.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string combinedString = header + " " + messageId;
+    newClient.send(combinedString); 
+    newClient.close();
 }
 
+void MessageParser::linkAnalyserNewRequest(
+    string link, string messageId) {
+    Client newClient("192.168.86.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string combinedString = link + " " + messageId;
+    newClient.send(combinedString); 
+    newClient.close();
+}
 
 void MessageParser::textAnalyserNewqRequest(
     string messageHeader, string messageBody,
     string messageId) {
-    
+    Client newClient("192.168.88.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string combinedString = messageHeader + " " 
+                            + " " + messageBody + 
+                            " " + messageId;
+    newClient.send(combinedString); 
+    newClient.close();
 }
 
-
-
+void MessageParser::attachmentAnalyserNewRequest(
+    string attachment, string messageId) {
+    Client newClient("192.168.92.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string combinedString = attachment + " " + messageId;
+    newClient.send(combinedString); 
+    newClient.close();
+}
 
 void MessageParser::parseMessage(string mailData) {
     string headers = mailData + "_NetworkHeaders";
@@ -81,12 +107,17 @@ void MessageParser::parseMessage(string mailData) {
     string messageId = boost::uuids::to_string(newUuid);
     
     headerAnalyserNewRequest(messageFields.headers, messageId);
-    
-    
-    
+
+    if(!links.empty()) {
+        for(auto &linkx: messageFields.links) {
+            linkAnalyserNewRequest(linkx, messageId);
+        }
+        links.clear();
+    }
+
     textAnalyserNewqRequest(messageFields.messageHeader,
                             messageFields.messageBody ,messageId);
-                            
+
     if(!attachments.empty()) {
         for(auto &attachment:messageFields.attachments) {
             attachmentAnalyserNewRequest(attachment,messageId);
@@ -98,12 +129,17 @@ void MessageParser::parseMessage(string mailData) {
 void MessageParser::runServer() {
     MPServer.socket();
     MPServer.bind();
-    //TODO:是否需要修改listen的数值
-    MPServer.listen(50);
+    MPServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
         MPServer.accept();
         string messageInfo = MPServer.recv();
-        std::cout << messageInfo << std::endl;
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             exit(0);   
         }

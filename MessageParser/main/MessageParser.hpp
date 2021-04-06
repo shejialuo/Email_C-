@@ -13,7 +13,7 @@ private:
 public:
     MessageParser(int serverPort);
     void headerAnalyserNewRequest(string headers, string messageId);
-    void linkAnalyserNewRequest();
+    void linkAnalyserNewRequest(string links, string messageId);
     void textAnalyserNewqRequest(string messageHeader, string messageBody, string messageId);
     void attachmentAnalyserNewRequest(string attachment, string messageId);
     void parseMessage(string mailData);

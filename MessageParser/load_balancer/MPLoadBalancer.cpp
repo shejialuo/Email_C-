@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <chrono>
 
 MessageParser_LoadBalancer::MessageParser_LoadBalancer(
     int serverPort): MPLBServer(serverPort) {
@@ -45,14 +47,17 @@ void MessageParser_LoadBalancer::newRequest(string mailData) {
 void MessageParser_LoadBalancer::runServer() {
     MPLBServer.socket();
     MPLBServer.bind();
-    MPLBServer.listen(500);
+    MPLBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
         MPLBServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(MPLBServer.getClientAddr().sin_addr));
         string messageInfo = MPLBServer.recv();
-        std::cout << messageInfo << std::endl;
-
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             MessageParserInterface newInstance {
                 inet_ntoa(MPLBServer.getClientAddr().sin_addr)};

@@ -3,5 +3,5 @@
 int main() {
     MessageParser messageParser(8000);
     messageParser.runServer();
-    return 0;
+    exit(0);
 }
