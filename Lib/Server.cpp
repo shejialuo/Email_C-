@@ -35,6 +35,10 @@ string Server::recv() {
     return response;
 }
 
+int Server::close() {
+    return ::close(server_sockfd);
+}
+
 struct sockaddr_in Server::getClientAddr() {
     return clientAddr;
 }
