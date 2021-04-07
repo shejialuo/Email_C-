@@ -20,7 +20,7 @@ void HeaderAnalyser::analyzeHeaders(string headers, string messageId) {
    newClient.socket();
    newClient.bind();
    newClient.connect();
-   string headerAnalyisisResult = "headers " + headers + " " + messageId;
+   string headerAnalyisisResult = "Headers " + headers + " " + messageId;
    newClient.send(headerAnalyisisResult);
    newClient.close();
 }

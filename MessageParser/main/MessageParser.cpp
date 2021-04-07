@@ -4,9 +4,36 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <future>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+
+class DBInsert {
+private:
+    Server DBInsertServer;
+public:
+    DBInsert(int serverPort): DBInsertServer(serverPort) {
+        DBInsertServer.socket();
+        DBInsertServer.bind();
+        DBInsertServer.listen(5000);
+    }
+    void newRequest(string request) {
+        Client newClient("192.168.104.110", 8000, 8001);
+        newClient.socket();
+        newClient.bind();
+        newClient.connect();
+        newClient.send(request);
+        newClient.close();
+    }
+    string operator()(string request) {
+        newRequest(request);
+        DBInsertServer.accept();
+        string results = DBInsertServer.recv();
+        DBInsertServer.close();
+        return results;
+    }
+};
 
 MessageParser::MessageParser(int serverPort): MPServer(serverPort) {
    Client newClient("192.168.82.110",8000,8001);
@@ -106,6 +133,12 @@ void MessageParser::parseMessage(string mailData) {
     boost::uuids::uuid newUuid = boost::uuids::random_generator()();
     string messageId = boost::uuids::to_string(newUuid);
     
+    DBInsert DBInserter(8002);
+    string res = messageId + " " + std::to_string(numberOfLinks) + " "
+                 + std::to_string(numberOfAttachments);
+    auto futureDNInsert = std::async(DBInserter, messageId);
+    futureDNInsert.get();
+
     headerAnalyserNewRequest(messageFields.headers, messageId);
 
     if(!links.empty()) {
@@ -141,7 +174,7 @@ void MessageParser::runServer() {
         std::string logString = tt + " " + messageInfo;
         ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
-            exit(0);   
+            exit(0);
         }
         else {
             parseMessage(messageInfo);

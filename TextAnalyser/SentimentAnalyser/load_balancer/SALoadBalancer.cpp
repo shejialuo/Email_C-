@@ -1,66 +1,68 @@
-#include "TALoadBalancer.hpp"
+#include "SALoadBalancer.hpp"
+#include <vector>
 #include <iterator>
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <chrono>
 
-TextAnalyser_LoadBalancer::TextAnalyser_LoadBalancer(
-    int serverPort): TAServer(serverPort){
+SentimentAnalyser_LoadBalancer::SentimentAnalyser_LoadBalancer(
+    int serverPort): SALBServer(serverPort){
     instancesConnected = {};
     nextInstance = -1;    
 }
 
-TextAnalysisInterface TextAnalyser_LoadBalancer
+SentimentAnalysisInterface SentimentAnalyser_LoadBalancer
     ::disconnectInstance() {
-    TextAnalysisInterface removedInstance = instancesConnected.back();
+    SentimentAnalysisInterface removedInstance = instancesConnected.back();
     instancesConnected.pop_back();
     return removedInstance;
 }
 
-void TextAnalyser_LoadBalancer::connectInstance(
-    TextAnalysisInterface newInstance) {
+void SentimentAnalyser_LoadBalancer::connectInstance(
+    SentimentAnalysisInterface newInstance) {
     instancesConnected.push_back(newInstance);
 }
 
-void TextAnalyser_LoadBalancer::newRequest(
-    string headers, string messageId) {
-    nextInstance =  ++nextInstance % instancesConnected.size();
+void SentimentAnalyser_LoadBalancer::newRequest(string messageBody, string ip) {
+    nextInstance =  (nextInstance + 1) % instancesConnected.size();
     auto pos = instancesConnected.cbegin();
     advance(pos, nextInstance);
-    TextAnalysisInterface selectedInstance = *pos;
+    SentimentAnalysisInterface selectedInstance = *pos;
     Client newClient(selectedInstance.ipAddr, 8000, 8001);
     newClient.socket();
     newClient.bind();
     newClient.connect();
-    newClient.send("new request");
-    newClient.send(headers);
-    newClient.send(messageId);
+    string combined = messageBody + ip;
+    newClient.send(combined);
     newClient.close();
 }
 
-
-void TextAnalyser_LoadBalancer::runServer() {
-    TAServer.socket();
-    TAServer.bind();
-    TAServer.listen(500);
+void SentimentAnalyser_LoadBalancer::runServer() {
+    SALBServer.socket();
+    SALBServer.bind();
+    SALBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
-        TAServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(TAServer.getClientAddr().sin_addr));
-        string messageInfo = TAServer.recv();
-        std::cout << messageInfo << std::endl;
-
+        SALBServer.accept();
+        string ip = inet_ntoa(SALBServer.getClientAddr().sin_addr);
+        string messageInfo = SALBServer.recv();
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
-            TextAnalysisInterface newInstance {
-                inet_ntoa(TAServer.getClientAddr().sin_addr)};
+            SentimentAnalysisInterface newInstance {
+                inet_ntoa(SALBServer.getClientAddr().sin_addr)};
             connectInstance(newInstance);
         }
-
-        if(strcmp(messageInfo.c_str(), "new request") == 0) {
-            string headers = HAServer.recv();
-            string messageId = HAServer.recv();
-            newRequest(headers, messageId);
-        }
-        if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
+        else if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             disconnectInstance();
+        }
+        else {
+            newRequest(messageInfo, ip);
         }
     }
 }

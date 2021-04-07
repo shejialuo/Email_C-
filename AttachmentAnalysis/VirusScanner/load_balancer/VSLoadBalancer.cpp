@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <chrono>
 
 VirusScanner_LoadBalancer::VirusScanner_LoadBalancer(
     int serverPort): VSLBServer(serverPort) {
@@ -47,13 +49,17 @@ void VirusScanner_LoadBalancer::newRequest(
 void VirusScanner_LoadBalancer::runServer() {
     VSLBServer.socket();
     VSLBServer.bind();
-    VSLBServer.listen(500);
+    VSLBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
         VSLBServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(VSLBServer.getClientAddr().sin_addr));
         string messageInfo = VSLBServer.recv();
-        std::cout << messageInfo << std::endl;
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
 
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             VirusScannerInterface newInstance {

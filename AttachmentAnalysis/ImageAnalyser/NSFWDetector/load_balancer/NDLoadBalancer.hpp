@@ -5,12 +5,12 @@
 #include <list>
 #include "../../../../Lib/Server.hpp"
 #include "../../../../Lib/Client.hpp"
+
 using namespace std;
 
 struct NSFWInterface {
     string ipAddr;
 };
-
 
 class NSFWDetector_LoadBalancer {
 private:
@@ -21,8 +21,8 @@ public:
     NSFWDetector_LoadBalancer(int serverPort);
     void connectInstance(NSFWInterface newInstance);
     NSFWInterface disconnectInstance();
-    
+    void newRequest(string image, string ip);
+    void runServer();
 };
-
 
 #endif // NDLOADBALANCER_HPP

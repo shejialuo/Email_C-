@@ -1,33 +1,28 @@
-#ifndef TALOADBALANCER_HPP
-#define TALOADBALANCER_HPP
+#ifndef SALOADBALANCER_HPP
+#define SALOADBALANCER_HPP
 
 #include <string>
 #include <list>
-#include "../../Lib/Server.hpp"
-#include "../../Lib/Client.hpp"
+#include "../../../Lib/Server.hpp"
+#include "../../../Lib/Client.hpp"
 
 using namespace std;
 
-struct TextAnalysisInterface {
+struct SentimentAnalysisInterface {
     string ipAddr;
 };
 
-class TextAnalyser_LoadBalancer {
+class SentimentAnalyser_LoadBalancer {
 private:
-    list<TextAnalysisInterface> instancesConnected;
+    list<SentimentAnalysisInterface> instancesConnected;
     int nextInstance;
-    Server TAServer;
+    Server SALBServer;
 public:
-    //! 构造函数
-    TextAnalyser_LoadBalancer(int serverPort);
-    //! 将新创建的TextAnalyser加入instancesConnected
-    void connectInstance(TextAnalysisInterface newInstance);
-    //! 接收TextAnalyser发送的信息进而删除该实例
-    TextAnalysisInterface disconnectInstance();
-    //! 发送header至某个HeaderAnalyser实例
-    void newRequest(string messageHeader, string messageBody, string messageId);
-    //! 启动Server程序与HeaderAnalyser进行通信
+    SentimentAnalyser_LoadBalancer(int serverPort);
+    void connectInstance(SentimentAnalysisInterface newInstance);
+    SentimentAnalysisInterface disconnectInstance();
+    void newRequest(string messageBody, string ip);
     void runServer();
 };
 
-#endif // TALOADBALANCER_HPP
+#endif // SALOADBALANCER_HPP

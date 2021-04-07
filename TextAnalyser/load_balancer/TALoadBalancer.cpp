@@ -1,9 +1,13 @@
 #include "TALoadBalancer.hpp"
+#include <vector>
 #include <iterator>
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <chrono>
 
 TextAnalyser_LoadBalancer::TextAnalyser_LoadBalancer(
-    int serverPort): TAServer(serverPort){
+    int serverPort): TALBServer(serverPort){
     instancesConnected = {};
     nextInstance = -1;    
 }
@@ -21,8 +25,8 @@ void TextAnalyser_LoadBalancer::connectInstance(
 }
 
 void TextAnalyser_LoadBalancer::newRequest(
-    string headers, string messageId) {
-    nextInstance =  ++nextInstance % instancesConnected.size();
+    string messageHeader, string messageBody, string messageId) {
+    nextInstance =  (nextInstance + 1) % instancesConnected.size();
     auto pos = instancesConnected.cbegin();
     advance(pos, nextInstance);
     TextAnalysisInterface selectedInstance = *pos;
@@ -31,36 +35,45 @@ void TextAnalyser_LoadBalancer::newRequest(
     newClient.bind();
     newClient.connect();
     newClient.send("new request");
-    newClient.send(headers);
-    newClient.send(messageId);
+    string combinedString = messageHeader + " " + messageBody
+                            + " " + messageId;
+    newClient.send(combinedString);
     newClient.close();
 }
 
-
 void TextAnalyser_LoadBalancer::runServer() {
-    TAServer.socket();
-    TAServer.bind();
-    TAServer.listen(500);
+    TALBServer.socket();
+    TALBServer.bind();
+    TALBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
-        TAServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(TAServer.getClientAddr().sin_addr));
-        string messageInfo = TAServer.recv();
-        std::cout << messageInfo << std::endl;
-
+        TALBServer.accept();
+        string messageInfo = TALBServer.recv();
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             TextAnalysisInterface newInstance {
-                inet_ntoa(TAServer.getClientAddr().sin_addr)};
+                inet_ntoa(TALBServer.getClientAddr().sin_addr)};
             connectInstance(newInstance);
         }
-
-        if(strcmp(messageInfo.c_str(), "new request") == 0) {
-            string headers = HAServer.recv();
-            string messageId = HAServer.recv();
-            newRequest(headers, messageId);
-        }
-        if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
+        else if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             disconnectInstance();
+        }
+        else {
+            vector<string> param;
+            istringstream iss(messageInfo);
+            string token;
+            while(getline(iss,token,' ')) {
+                param.push_back(token);
+            }
+            string messageHeader = param.at(0);
+            string messageBody = param.at(1);
+            string messageId = param.at(2);
+            newRequest(messageHeader, messageBody, messageId);
         }
     }
 }

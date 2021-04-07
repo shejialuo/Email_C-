@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <chrono>
 
 ImageAnalyser_LoadBalancer::ImageAnalyser_LoadBalancer(
     int serverPort): IALBServer(serverPort) {
@@ -47,13 +49,17 @@ void ImageAnalyser_LoadBalancer::newRequest(
 void ImageAnalyser_LoadBalancer::runServer() {
     IALBServer.socket();
     IALBServer.bind();
-    IALBServer.listen(500);
+    IALBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
         IALBServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(IALBServer.getClientAddr().sin_addr));
         string messageInfo = IALBServer.recv();
-        std::cout << messageInfo << std::endl;
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
 
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             ImageAnalysisInterface newInstance {

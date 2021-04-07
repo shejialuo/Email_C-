@@ -1,13 +1,13 @@
 #include "VirusScanner.hpp"
-#include "../../Data/AttachmentAnalysis.hpp"
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <cstdlib>
+#include <fstream>
+#include <chrono>
 
 VirusScanner::VirusScanner(int serverPort): VSServer(serverPort) {
-   //TODO: 修改ip地址为VirusScanner_LoadBalancer。
-   Client newClient("127.0.0.1",8000,8001);
+   Client newClient("192.168.92.110",8000,8001);
    newClient.socket();
    newClient.bind();
    newClient.connect();
@@ -19,13 +19,16 @@ VirusScanner::VirusScanner(int serverPort): VSServer(serverPort) {
 void VirusScanner::scanAttachment(string attachment, string messageId) {
    bool virusFound = rand() % 5 == 0;
    if(virusFound) {
-      AttachmentAnalysis res("VirusFound from VirusScanner in attachment: " + attachment,
-                              messageId);
-      //TODO: 发送AttachmentAnalysis至messageAnalyserLoadBalancer
+      string res = "Attachments " + attachment + " " + messageId + " VirusFound";
+      Client newClient("192.168.102.110",8000,8001);
+      newClient.socket();
+      newClient.bind();
+      newClient.connect();
+      newClient.send(res); 
+      newClient.close();
    }
    else {
-      //TODO: 修改ip地址为attachmentManager_LoadBalancer。
-      Client newClient("127.0.0.1",8000,8001);
+      Client newClient("192.168.94.110",8000,8001);
       newClient.socket();
       newClient.bind();
       newClient.connect();
@@ -38,11 +41,18 @@ void VirusScanner::scanAttachment(string attachment, string messageId) {
 void VirusScanner::runServer() {
    VSServer.socket();
    VSServer.bind();
-   VSServer.listen(50);
+   VSServer.listen(5000);
+   std::ofstream ofile;
+   ofile.open("./log.txt");
    while(true) {
       VSServer.accept();
       string messageInfo = VSServer.recv();
-      std::cout << messageInfo << std::endl;
+      auto t = std::chrono::system_clock::now();
+      std::time_t tt = std::chrono::system_clock::to_time_t(t);
+      std::string stt = ctime(&tt);
+      std::string logString = tt + " " + messageInfo;
+      ofile << logString << std::endl;
+      
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
       }
