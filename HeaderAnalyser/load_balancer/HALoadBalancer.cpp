@@ -2,6 +2,8 @@
 #include <iterator>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <chrono>
 #include <sstream>
 
 HeaderAnalyser_LoadBalancer::HeaderAnalyser_LoadBalancer(
@@ -47,14 +49,18 @@ void HeaderAnalyser_LoadBalancer::newRequest(
 void HeaderAnalyser_LoadBalancer::runServer() {
     HALBServer.socket();
     HALBServer.bind();
-    HALBServer.listen(500);
+    HALBServer.listen(5000);
+    std::ofstream ofile;
+    ofile.open("./log.txt");
     while(true) {
         HALBServer.accept();
-        printf("accept client %s\n",
-                inet_ntoa(HALBServer.getClientAddr().sin_addr));
         string messageInfo = HALBServer.recv();
-        std::cout << messageInfo << std::endl;
-
+        auto t = std::chrono::system_clock::now();
+        std::time_t tt = std::chrono::system_clock::to_time_t(t);
+        std::string stt = ctime(&tt);
+        std::string logString = tt + " " + messageInfo;
+        ofile << logString << std::endl;
+        
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             HeaderAnalysisInterface newInstance {
                 inet_ntoa(HALBServer.getClientAddr().sin_addr)};

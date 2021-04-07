@@ -1,12 +1,12 @@
 #include "HeaderAnalyser.hpp"
-#include "../../Data/HeaderAnalysis.hpp"
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <chrono>
 
 HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
-   //TODO: 修改IP地址为HeaderAnalyser_LoadBalancer
-   Client newClient("127.0.0.1",8000,8001);
+   Client newClient("192.168.84.110",8000,8001);
    newClient.socket();
    newClient.bind();
    newClient.connect();
@@ -16,25 +16,30 @@ HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
 }
 
 void HeaderAnalyser::analyzeHeaders(string headers, string messageId) {
-   //TODO: 修改IP地址为MessageAnalyser_LoadBalancer
-   Client newClient("127.0.0.1",8000,8001);
+   Client newClient("192.168.102.110",8000,8001);
    newClient.socket();
    newClient.bind();
    newClient.connect();
-   string headerAnalyisisResult = "headerAnalyisisResult";
-   
-   newClient.send(headerAnalyisisResult); 
+   string headerAnalyisisResult = "headers " + headers + " " + messageId;
+   newClient.send(headerAnalyisisResult);
    newClient.close();
 }
 
 void HeaderAnalyser::runServer() {
    HAServer.socket();
    HAServer.bind();
-   HAServer.listen(50);
+   HAServer.listen(5000);
+   std::ofstream ofile;
+   ofile.open("./log.txt");
    while(true) {
       HAServer.accept();
       string messageInfo = HAServer.recv();
-      std::cout << messageInfo << std::endl;
+      auto t = std::chrono::system_clock::now();
+      std::time_t tt = std::chrono::system_clock::to_time_t(t);
+      std::string stt = ctime(&tt);
+      std::string logString = tt + " " + messageInfo;
+      ofile << logString << std::endl;
+      
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
       }
