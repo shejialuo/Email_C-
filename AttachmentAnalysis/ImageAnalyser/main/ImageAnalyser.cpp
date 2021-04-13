@@ -6,7 +6,8 @@
 #include <future>
 #include <thread>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 class NSFWAsyncCall {
 private:
@@ -29,7 +30,6 @@ public:
         newRequest(image);
         NSFWAsyncCallServer.accept();
         string results = NSFWAsyncCallServer.recv();
-        NSFWAsyncCallServer.close();
         return results;
     }
 };
@@ -55,10 +55,12 @@ public:
         newRequest(image);
         IRAsyncCallServer.accept();
         string results = IRAsyncCallServer.recv();
-        IRAsyncCallServer.close();
         return results;
     }
 };
+
+NSFWAsyncCall nsfwAsyncCall(8002);
+ImageRecognizerAsyncCall IRAsyncCall(8003);
 
 ImageAnalyser::ImageAnalyser(int serverPort): IAServer(serverPort) {
     Client newClient("192.168.96.110",8000,8001);
@@ -71,9 +73,7 @@ ImageAnalyser::ImageAnalyser(int serverPort): IAServer(serverPort) {
 }
 
 void ImageAnalyser::analyzeImage(string image, string messageId) {
-    NSFWAsyncCall nsfwAsyncCall(8002);
     auto futureNSFW = std::async(nsfwAsyncCall, image);
-    ImageRecognizerAsyncCall IRAsyncCall(8003);
     auto futureIR = std::async(IRAsyncCall, image);
     string NSFWResult = futureNSFW.get();
     string IRResult = futureIR.get();
@@ -97,16 +97,16 @@ void ImageAnalyser::runServer() {
     IAServer.bind();
     IAServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
       IAServer.accept();
       string messageInfo = IAServer.recv();
-      auto t = chrono::system_clock::now();
-      std::time_t tt = chrono::system_clock::to_time_t(t);
-      string stt = ctime(&tt);
-      string logString = tt + " " + messageInfo;
-      ofile << logString << endl;
-      std::cout << messageInfo << std::endl;
+      time_t now_time=time(NULL);  
+      tm*  t_tm = localtime(&now_time);  
+      string stt = asctime(t_tm);
+      stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+      std::string logString = stt + " " + messageInfo;
+      ofile << logString << std::endl;
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0); 
       }

@@ -1,7 +1,8 @@
 #include "DataBase.hpp"
 
 #include <iostream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 #include <fstream>
 #include <vector>
 #include <sstream>
@@ -16,38 +17,86 @@ Database::Database(int serverPort): DBServer(serverPort) {
 
 void Database::insertMessageInformation(string ip, string messageId, 
     int LinkNumber, int attachmentNumber) {
+
     int numberOfActivityWaiting = 2 + LinkNumber + attachmentNumber;
-    unordered_multiset<AttachmentAnalysis> attachmentAnalysis {"",""};
+    vector<LinksAnalysis> linkAnalysis;
+    vector<AttachmentAnalysis> attachmentAnalysis;
     Results newResults = Results(numberOfActivityWaiting,
                                   HeaderAnalysis("",""),
-                                  LinksAnalysis("",""),
+                                  linkAnalysis,
                                   TextAnalysis("",""),
                                   attachmentAnalysis);
-    actualMessage.insert({messageId,newResults});
-    auto t = std::chrono::system_clock::now();
-    std::time_t tt = std::chrono::system_clock::to_time_t(t);
-    std::string stt = ctime(&tt);
-    startAnalysisTimes.insert({messageId, stt});
+    actualMessage.emplace(messageId,newResults);
+    time_t now_time=time(NULL);  
+    tm*  t_tm = localtime(&now_time);  
+    string stt = asctime(t_tm);
+    stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+    startAnalysisTimes.emplace(messageId, stt);
     ++numberOfMessageInTheMonitoringWindow;
     Client newClient(ip, 8002,8001);
-    newClient.socket();
-    newClient.bind();
-    newClient.connect();
-    newClient.send("OK");
+    std::cout << newClient.socket();
+    std::cout << newClient.bind();
+    std::cout << newClient.connect();
+    std::cout << newClient.send("OK");
     newClient.close();
 }
 
-int Database::insertHeadersAnalysisResults(HeaderAnalysis res) {
+int Database::insertHeadersAnalysisResults(HeaderAnalysis res, string ip) {
     int numberOfActivityWaiting = -1;
-
-
+    actualMessage[res.haMessagedId].headerAnalysisResults.haMessagedId = res.haMessagedId;
+    actualMessage[res.haMessagedId].headerAnalysisResults.haResults = res.haResults;
+    actualMessage[res.haMessagedId].numberOfActivityWaiting - 1;
+    numberOfActivityWaiting = actualMessage[res.haMessagedId].numberOfActivityWaiting;
+    Client newCient(ip, 8003, 8001);
+    newCient.socket();
+    newCient.bind();
+    newCient.connect();
+    newCient.send(to_string(numberOfActivityWaiting));
+    newCient.close();
     return numberOfActivityWaiting;
 }
 
-int Database::insertAttachmentAnalysisResults(AttachmentAnalysis res) {
+int Database::insertLinksAnalysisResults(LinksAnalysis res, string ip) {
     int numberOfActivityWaiting = -1;
-    
+    actualMessage[res.laMessageId].linksAnalysisResults.push_back(res);
+    actualMessage[res.laMessageId].numberOfActivityWaiting - 1;
+    numberOfActivityWaiting = actualMessage[res.laMessageId].numberOfActivityWaiting;
+    Client newCient(ip, 8003, 8001);
+    newCient.socket();
+    newCient.bind();
+    newCient.connect();
+    newCient.send(to_string(numberOfActivityWaiting));
+    newCient.close();
+    return numberOfActivityWaiting;
+}
 
+int Database::insertTextAnalysisResults(TextAnalysis res, string ip) {
+    int numberOfActivityWaiting = -1;
+    actualMessage[res.laMessageId].textAnalysisResults.laMessageId = res.laMessageId;
+    actualMessage[res.laMessageId].textAnalysisResults.laResults = res.laResults;
+    actualMessage[res.laMessageId].numberOfActivityWaiting - 1;
+    numberOfActivityWaiting = actualMessage[res.laMessageId].numberOfActivityWaiting;
+    Client newCient(ip, 8003, 8001);
+    newCient.socket();
+    newCient.bind();
+    newCient.connect();
+    newCient.send(to_string(numberOfActivityWaiting));
+    newCient.close();
+    return numberOfActivityWaiting;
+}
+
+int Database::insertAttachmentAnalysisResults(AttachmentAnalysis res, string ip) {
+    int numberOfActivityWaiting = -1;
+    actualMessage[res.aaMessageId].attachmentAnalysisResults.push_back(res);
+    actualMessage[res.aaMessageId].numberOfActivityWaiting - 1;
+    numberOfActivityWaiting = actualMessage[res.aaMessageId].numberOfActivityWaiting;
+    numberOfActivityWaiting = actualMessage[res.aaMessageId].numberOfActivityWaiting;
+    Client newCient(ip, 8003, 8001);
+    newCient.socket();
+    newCient.bind();
+    newCient.connect();
+    newCient.send(to_string(numberOfActivityWaiting));
+    newCient.close();
     return numberOfActivityWaiting;
 }
 
@@ -77,15 +126,17 @@ void Database::runServer() {
     DBServer.bind();
     DBServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
+        cout << "hello world" << endl;
         DBServer.accept();
         string ip = inet_ntoa(DBServer.getClientAddr().sin_addr);
         string messageInfo = DBServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
-        std::string logString = tt + " " + messageInfo;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
         vector<string> param;
         istringstream iss(messageInfo);
@@ -95,9 +146,29 @@ void Database::runServer() {
         }
         token = param.at(0);
         if(strcmp(token.c_str(), "Headers") == 0) {
-
+            string result = param.at(1) + " " + param.at(3);
+            string messageId = param.at(2);
+            HeaderAnalysis res = HeaderAnalysis(result, messageId);
+            insertHeadersAnalysisResults(res, ip);
         }
-        else if()
+        else if(strcmp(token.c_str(), "Links") == 0) {
+            string result = param.at(1) + " " + param.at(3);
+            string messageId = param.at(2);
+            LinksAnalysis res = LinksAnalysis(result, messageId);
+            insertLinksAnalysisResults(res, ip);
+        }
+        else if(strcmp(token.c_str(), "Texts") == 0) {
+            string result = param.at(1) + " " + param.at(3);
+            string messageId = param.at(2);
+            TextAnalysis res = TextAnalysis(result, messageId);
+            insertTextAnalysisResults(res, ip);
+        }
+        else if(strcmp(token.c_str(), "Attachments") == 0) {
+            string result = param.at(1) + " " + param.at(3) + " " + param.at(4);
+            string messageId = param.at(2);
+            AttachmentAnalysis res =AttachmentAnalysis(result, messageId);
+            insertAttachmentAnalysisResults(res, ip);
+        }
         else {
             insertMessageInformation(ip,param.at(0),
              std::stoi(param.at(1)), std::stoi(param.at(2)));

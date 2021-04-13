@@ -4,6 +4,8 @@
 #include "../Lib/Server.hpp"
 #include "../Lib/Client.hpp"
 
+using namespace std;
+
 class MessageReceiver {
 private:
     Server MRServer;

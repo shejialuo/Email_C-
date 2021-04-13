@@ -10,6 +10,7 @@ struct LinksAnalysis {
         laResults = results;
         laMessageId = messageId;
     }
+    LinksAnalysis() {}
 };
 
 #endif // LINKSANALYSIS_HPP

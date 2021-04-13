@@ -4,7 +4,8 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 ImageRecognizer_LoadBalancer::ImageRecognizer_LoadBalancer(
     int serverPort): IRLBServer(serverPort) {
@@ -51,16 +52,17 @@ void ImageRecognizer_LoadBalancer::runServer() {
     IRLBServer.bind();
     IRLBServer.listen(5000);
     ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         IRLBServer.accept();
         string ip = inet_ntoa(IRLBServer.getClientAddr().sin_addr);
         string messageInfo = IRLBServer.recv();
-        auto t = chrono::system_clock::now();
-        std::time_t tt = chrono::system_clock::to_time_t(t);
-        string stt = ctime(&tt);
-        string logString = tt + " " + messageInfo;
-        ofile << logString << endl;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
+        ofile << logString << std::endl;
         
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             ImageAnalysisInterface newInstance {

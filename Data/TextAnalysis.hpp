@@ -10,6 +10,7 @@ struct TextAnalysis {
         laResults = results;
         laMessageId = messageId;
     }
+    TextAnalysis() {}
 };
 
 #endif // TEXTANALYSIS_HPP

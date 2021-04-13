@@ -86,6 +86,19 @@ g++ -g ./main.cpp ./NSFWDetector.cpp ../../../../Lib/Server.cpp ../../../../Lib/
 cd ~/Projects/Email_Microservices/AttachmentAnalysis/ImageAnalyser/ImageRecognizer/load_balancer
 g++ -g ./main.cpp ./IRLoadBalancer.cpp ../../../../Lib/Server.cpp ../../../../Lib/Client.cpp -o $ExecutableDirectory/IRLoadBalancer
 
-#* IMageRecognizer
+#* ImageRecognizer
 cd ~/Projects/Email_Microservices/AttachmentAnalysis/ImageAnalyser/ImageRecognizer/main
 g++ -g ./main.cpp ./ImageRecognizer.cpp ../../../../Lib/Server.cpp ../../../../Lib/Client.cpp -o $ExecutableDirectory/ImageRecognizer
+
+#* MessageAnalyser_LoadBalancer
+cd ~/Projects/Email_Microservices/MessageAnalyser/load_balancer
+g++ -g ./main.cpp ./MALoadBalancer.cpp ../../Lib/Server.cpp ../../Lib/Client.cpp -o $ExecutableDirectory/MALoadBalancer
+
+#* MessageAnalyser
+cd ~/Projects/Email_Microservices/MessageAnalyser/main
+g++ -g ./main.cpp ./MessageAnalyser.cpp ../../Lib/Server.cpp ../../Lib/Client.cpp -o $ExecutableDirectory/MessageAnalyser -lpthread
+
+#* Database
+
+cd ~/Projects/Email_Microservices/DataBase
+g++ -g ./main.cpp ./DataBase.cpp ../Lib/Server.cpp ../Lib/Client.cpp -o $ExecutableDirectory/DataBase

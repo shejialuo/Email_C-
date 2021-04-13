@@ -3,7 +3,8 @@
 #include <unordered_set>
 #include <iostream>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 #include <future>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -30,19 +31,20 @@ public:
         newRequest(request);
         DBInsertServer.accept();
         string results = DBInsertServer.recv();
-        DBInsertServer.close();
         return results;
     }
 };
 
+DBInsert DBInserter(8002);
+
 MessageParser::MessageParser(int serverPort): MPServer(serverPort) {
-   Client newClient("192.168.82.110",8000,8001);
-   newClient.socket();
-   newClient.bind();
-   newClient.connect();
-   string messagesInfo = "new connect";
-   newClient.send(messagesInfo); 
-   newClient.close();
+    Client newClient("192.168.82.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string messagesInfo = "new connect";
+    newClient.send(messagesInfo);
+    newClient.close();
 }
 
 void MessageParser::headerAnalyserNewRequest(
@@ -100,11 +102,12 @@ void MessageParser::parseMessage(string mailData) {
     unordered_multiset<string> links;
     unordered_multiset<string> attachments;
 
-    int numberOfLinks = rand() % 11 ;
+    int numberOfLinks = rand() % 11;
     if(numberOfLinks > 0) {
         int i = 0;
         while (i < numberOfLinks) {
             string link = mailData + "_Link" + to_string(i);
+            std::cout << link << std::endl;
             links.insert(link);
             ++i;
         }
@@ -118,7 +121,9 @@ void MessageParser::parseMessage(string mailData) {
         int i = 0;
         while(i < numberOfAttachments) {
             string attachment = mailData + "_Attachment" + to_string(i);
+            std::cout << attachment << std::endl;
             attachments.insert(attachment);
+            ++i;
         }
     }
     else {
@@ -133,12 +138,10 @@ void MessageParser::parseMessage(string mailData) {
     boost::uuids::uuid newUuid = boost::uuids::random_generator()();
     string messageId = boost::uuids::to_string(newUuid);
     
-    DBInsert DBInserter(8002);
+
     string res = messageId + " " + std::to_string(numberOfLinks) + " "
                  + std::to_string(numberOfAttachments);
-    auto futureDNInsert = std::async(DBInserter, messageId);
-    futureDNInsert.get();
-
+    auto futureDNInsert = std::async(DBInserter, res);
     headerAnalyserNewRequest(messageFields.headers, messageId);
 
     if(!links.empty()) {
@@ -164,14 +167,15 @@ void MessageParser::runServer() {
     MPServer.bind();
     MPServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         MPServer.accept();
         string messageInfo = MPServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
-        std::string logString = tt + " " + messageInfo;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             exit(0);

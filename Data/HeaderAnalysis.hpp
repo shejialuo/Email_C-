@@ -10,6 +10,7 @@ struct HeaderAnalysis {
         haResults = results;
         haMessagedId = messageId;
     }
+    HeaderAnalysis() {}
 };
 
 #endif // HEADERANALYSIS_HPP

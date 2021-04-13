@@ -4,7 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 SentimentAnalyser_LoadBalancer::SentimentAnalyser_LoadBalancer(
     int serverPort): SALBServer(serverPort){
@@ -43,16 +44,17 @@ void SentimentAnalyser_LoadBalancer::runServer() {
     SALBServer.bind();
     SALBServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         SALBServer.accept();
         string ip = inet_ntoa(SALBServer.getClientAddr().sin_addr);
         string messageInfo = SALBServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
-        std::string logString = tt + " " + messageInfo;
-        ofile << logString << std::endl;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
+        ofile << logString << std::endl;;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             SentimentAnalysisInterface newInstance {
                 inet_ntoa(SALBServer.getClientAddr().sin_addr)};

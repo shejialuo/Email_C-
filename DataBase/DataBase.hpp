@@ -20,11 +20,11 @@ private:
 public:
     Database(int serverPort);
     void insertMessageInformation(string ip, string messageId, int linkNumber, int attachmentNumber);
-    int insertHeadersAnalysisResults(HeaderAnalysis res);
-    int insertLinksAnalysisResults(LinksAnalysis res);
-    int insertTextAnalysisResults(TextAnalysis res);
-    int insertAttachmentAnalysisResults(AttachmentAnalysis res);
-    Results getMessageResults(string messageId);
+    int insertHeadersAnalysisResults(HeaderAnalysis res, string ip);
+    int insertLinksAnalysisResults(LinksAnalysis res, string ip);
+    int insertTextAnalysisResults(TextAnalysis res, string ip);
+    int insertAttachmentAnalysisResults(AttachmentAnalysis res, string ip);
+    // Results getMessageResults(string messageId);
     int getNumberOfMessagesInTheMonitoringWindow();
     void resetNumberOfMessagesInTheMonitoringWindow();
     double getAverageAnalysisTime();

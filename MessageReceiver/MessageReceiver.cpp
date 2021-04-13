@@ -1,6 +1,7 @@
 #include "MessageReceiver.hpp"
 #include <iostream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 #include <fstream>
 
 MessageReceiver::MessageReceiver(int port): MRServer(port) {}
@@ -19,14 +20,15 @@ void MessageReceiver::runServer() {
     MRServer.bind();
     MRServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
 
     while(true) {
         MRServer.accept();
         std::string messageInfo = MRServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
         newMessage(messageInfo);

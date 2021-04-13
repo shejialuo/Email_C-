@@ -4,7 +4,8 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 MessageParser_LoadBalancer::MessageParser_LoadBalancer(
     int serverPort): MPLBServer(serverPort) {
@@ -49,14 +50,15 @@ void MessageParser_LoadBalancer::runServer() {
     MPLBServer.bind();
     MPLBServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         MPLBServer.accept();
         string messageInfo = MPLBServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
-        std::string logString = tt + " " + messageInfo;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             MessageParserInterface newInstance {

@@ -6,13 +6,18 @@
 #include <future>
 #include <thread>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 class DBAnalysis {
 private:
     Server DBServer;
 public:
-    DBAnalysis(int serverPort): DBServer(serverPort) {}
+    DBAnalysis(int serverPort): DBServer(serverPort) {
+        DBServer.socket();
+        DBServer.bind();
+        DBServer.listen(5000);
+    }
     void newRequest(string res) {
         Client newClient("192.168.104.110",8000,8001);
         newClient.socket();
@@ -22,53 +27,56 @@ public:
         newClient.close();
     }
     string operator()(string res) {
-        DBServer.socket();
-        DBServer.bind();
-        DBServer.listen(5000);
+        newRequest(res);
         DBServer.accept();
         string numberOfActivityWaiting = DBServer.recv();
         return numberOfActivityWaiting;
     }
 };
 
+DBAnalysis DBAsyncCall(8003);
+
+MessageAnalyser::MessageAnalyser(int serverPort):MAServer(serverPort) {
+    Client newClient("192.168.102.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string messagesInfo = "new connect";
+    newClient.send(messagesInfo); 
+    newClient.close(); 
+}
+
 void MessageAnalyser::insertHeadersAnalysisResults(string res) {
-    DBAnalysis DBAsyncCall(8002);
+
     auto futureResults = std::async(DBAsyncCall, res);
     int numberOfActivityWaiting = std::stoi(futureResults.get());
     if(numberOfActivityWaiting == 0) {
-        
+        std::cout << "All done" << std::endl;
     }
 }
 
 void MessageAnalyser::insertLinksAnalysisResults(string res) {
-    DBAnalysis DBAsyncCall(8003);
     auto futureResults = std::async(DBAsyncCall, res);
     int numberOfActivityWaiting = std::stoi(futureResults.get());
     if(numberOfActivityWaiting == 0) {
-
+        std::cout << "All done" << std::endl;
     }
 }
 
 void MessageAnalyser::insertTextAnalysisResults(string res) {
-    DBAnalysis DBAsyncCall(8004);
     auto futureResults = std::async(DBAsyncCall, res);
     int numberOfActivityWaiting = std::stoi(futureResults.get());
     if(numberOfActivityWaiting == 0) {
-
+        std::cout << "All done" << std::endl;
     }
 }
 
 void MessageAnalyser::insertAttachmentAnalysisResults(string res) {
-    DBAnalysis DBAsyncCall(8005);
     auto futureResults = std::async(DBAsyncCall, res);
     int numberOfActivityWaiting = std::stoi(futureResults.get());
     if(numberOfActivityWaiting == 0) {
-
+        std::cout << "All done" << std::endl;
     }
-}
-
-void takeFinalDecision(string messageId) {
-    
 }
 
 void MessageAnalyser::runServer() {
@@ -76,14 +84,15 @@ void MessageAnalyser::runServer() {
     MAServer.bind();
     MAServer.listen(5000);
     std::ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         MAServer.accept();
         string messageInfo = MAServer.recv();
-        auto t = std::chrono::system_clock::now();
-        std::time_t tt = std::chrono::system_clock::to_time_t(t);
-        std::string stt = ctime(&tt);
-        std::string logString = tt + " " + messageInfo;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             exit(0);

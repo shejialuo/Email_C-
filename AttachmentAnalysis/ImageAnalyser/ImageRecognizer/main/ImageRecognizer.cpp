@@ -3,9 +3,17 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 
 ImageRecognizer::ImageRecognizer(int serverPort):IRServer(serverPort) {
+    Client newClient("192.168.100.110",8000,8001);
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    string messagesInfo = "new connect";
+    newClient.send(messagesInfo); 
+    newClient.close();
     category = -1;
 }
 
@@ -25,15 +33,16 @@ void ImageRecognizer::runServer() {
     IRServer.bind();
     IRServer.listen(5000);
     ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         IRServer.accept();
         string messageInfo = IRServer.recv();
-        auto t = chrono::system_clock::now();
-        std::time_t tt = chrono::system_clock::to_time_t(t);
-        string stt = ctime(&tt);
-        string logString = tt + " " + messageInfo;
-        ofile << logString << endl;
+        time_t now_time=time(NULL);  
+        tm*  t_tm = localtime(&now_time);  
+        string stt = asctime(t_tm);
+        stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+        std::string logString = stt + " " + messageInfo;
+        ofile << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
         }

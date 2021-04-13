@@ -1,7 +1,8 @@
 #include "MailGenerator.hpp"
 #include <iostream>
 #include <unistd.h>
-#include <chrono>
+#include <time.h>
+#include <algorithm>
 #include <fstream>
 
 using namespace std;
@@ -24,7 +25,7 @@ MailGenerator::MailGenerator() {
 void MailGenerator::run() {
     int i = 0;
     ofstream ofile;
-    ofile.open("./log.txt");
+    ofile.open("./log.txt", ios::app);
     while(true) {
         int currentNumberOfMessageRequired = numberOfMessagesRequiredInAMonitorWindow.at(i);
         i = (i + 1) % numberOfMessagesRequiredInAMonitorWindow.size();
@@ -35,11 +36,12 @@ void MailGenerator::run() {
         while(j < currentNumberOfMessageRequired) {
             string mailData = "Message" + to_string(messageCounter);
 
-            auto t = chrono::system_clock::now();
-            std::time_t tt = chrono::system_clock::to_time_t(t);
-            string stt = ctime(&tt);
-            string logString = tt + " " + mailData;
-            ofile << logString << endl;
+            time_t now_time=time(NULL);  
+            tm*  t_tm = localtime(&now_time);  
+            string stt = asctime(t_tm);
+            stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+            std::string logString = stt + " " + mailData;
+            ofile << logString << std::endl;
 
             Client newClient("192.168.81.110", 8000, 8001);
             newClient.socket();

@@ -10,6 +10,7 @@ struct AttachmentAnalysis {
         aaResults = results;
         aaMessageId = messageId;
     }
+    AttachmentAnalysis() {}
 };
 
 
