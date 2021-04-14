@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -17,6 +16,7 @@ SentimentAnalyser::SentimentAnalyser(int serverPort): SAServer(serverPort) {
 }
 
 void SentimentAnalyser::analyzeSentiment(string messageBody, string ip) {
+    sleep(106);
     Client newClient(ip,8002,8001);
     newClient.socket();
     newClient.bind();
@@ -29,8 +29,6 @@ void SentimentAnalyser::runServer() {
     SAServer.socket();
     SAServer.bind();
     SAServer.listen(5000);
-    ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         SAServer.accept();
         string messageInfo = SAServer.recv();
@@ -39,7 +37,7 @@ void SentimentAnalyser::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
         }

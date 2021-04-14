@@ -11,13 +11,15 @@
 #include <string>
 using std::string;
 
+#define BUFFSIZE 100000
+
 class Client {
 private:
     int sockfd;
     struct sockaddr_in serverAddr;
     struct sockaddr_in clientAddr;
     socklen_t addrLen;
-    char buff[BUFSIZ];
+    char buff[BUFFSIZE];
 public:
     Client(string serverIp, int serverPort, int clientPort);
     int socket();

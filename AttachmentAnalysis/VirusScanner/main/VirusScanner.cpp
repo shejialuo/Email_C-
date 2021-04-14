@@ -3,7 +3,6 @@
 #include <vector>
 #include <sstream>
 #include <cstdlib>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -43,8 +42,6 @@ void VirusScanner::runServer() {
    VSServer.socket();
    VSServer.bind();
    VSServer.listen(5000);
-   std::ofstream ofile;
-   ofile.open("./log.txt", ios::app);
    while(true) {
       VSServer.accept();
       string messageInfo = VSServer.recv();
@@ -53,7 +50,7 @@ void VirusScanner::runServer() {
       string stt = asctime(t_tm);
       stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
       std::string logString = stt + " " + messageInfo;
-      ofile << logString << std::endl;
+      std::cout << logString << std::endl;
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
       }

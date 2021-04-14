@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -49,8 +48,6 @@ void MessageParser_LoadBalancer::runServer() {
     MPLBServer.socket();
     MPLBServer.bind();
     MPLBServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         MPLBServer.accept();
         string messageInfo = MPLBServer.recv();
@@ -59,7 +56,7 @@ void MessageParser_LoadBalancer::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             MessageParserInterface newInstance {
                 inet_ntoa(MPLBServer.getClientAddr().sin_addr)};

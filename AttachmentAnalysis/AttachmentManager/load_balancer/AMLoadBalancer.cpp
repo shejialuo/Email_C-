@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -51,8 +50,6 @@ void AttachmentManager_LoadBalancer::runServer() {
     AMLBServer.socket();
     AMLBServer.bind();
     AMLBServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         AMLBServer.accept();
         string messageInfo = AMLBServer.recv();
@@ -61,7 +58,7 @@ void AttachmentManager_LoadBalancer::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
 
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             AttachmentManagerInterface newInstance {

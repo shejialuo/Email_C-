@@ -32,6 +32,7 @@ string Server::recv() {
     int len = ::recv(client_sockfd, buff, BUFSIZ, 0);
     buff[len] = '\0';
     string response = buff;
+    memset(buff, '\0', sizeof(buff));
     return response;
 }
 

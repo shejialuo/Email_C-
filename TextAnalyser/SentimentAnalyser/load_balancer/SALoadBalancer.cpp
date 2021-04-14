@@ -3,7 +3,6 @@
 #include <iterator>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -34,7 +33,7 @@ void SentimentAnalyser_LoadBalancer::newRequest(string messageBody, string ip) {
     newClient.socket();
     newClient.bind();
     newClient.connect();
-    string combined = messageBody + ip;
+    string combined = messageBody + " " + ip;
     newClient.send(combined);
     newClient.close();
 }
@@ -43,8 +42,6 @@ void SentimentAnalyser_LoadBalancer::runServer() {
     SALBServer.socket();
     SALBServer.bind();
     SALBServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         SALBServer.accept();
         string ip = inet_ntoa(SALBServer.getClientAddr().sin_addr);
@@ -54,7 +51,7 @@ void SentimentAnalyser_LoadBalancer::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;;
+        std::cout << logString << std::endl;;
         if(strcmp(messageInfo.c_str(), "new connect") == 0) {
             SentimentAnalysisInterface newInstance {
                 inet_ntoa(SALBServer.getClientAddr().sin_addr)};

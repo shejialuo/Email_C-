@@ -3,8 +3,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <algorithm>
-#include <fstream>
-
 using namespace std;
 
 MailGenerator::MailGenerator() {
@@ -24,8 +22,6 @@ MailGenerator::MailGenerator() {
 
 void MailGenerator::run() {
     int i = 0;
-    ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         int currentNumberOfMessageRequired = numberOfMessagesRequiredInAMonitorWindow.at(i);
         i = (i + 1) % numberOfMessagesRequiredInAMonitorWindow.size();
@@ -41,7 +37,7 @@ void MailGenerator::run() {
             string stt = asctime(t_tm);
             stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
             std::string logString = stt + " " + mailData;
-            ofile << logString << std::endl;
+            std::cout << logString << std::endl;
 
             Client newClient("192.168.81.110", 8000, 8001);
             newClient.socket();

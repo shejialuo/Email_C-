@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -17,6 +16,7 @@ HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
 }
 
 void HeaderAnalyser::analyzeHeaders(string headers, string messageId) {
+   sleep(40);
    Client newClient("192.168.102.110",8000,8001);
    newClient.socket();
    newClient.bind();
@@ -30,8 +30,6 @@ void HeaderAnalyser::runServer() {
    HAServer.socket();
    HAServer.bind();
    HAServer.listen(5000);
-   std::ofstream ofile;
-   ofile.open("./log.txt", ios::app);
    while(true) {
       HAServer.accept();
       string messageInfo = HAServer.recv();
@@ -40,8 +38,7 @@ void HeaderAnalyser::runServer() {
       string stt = asctime(t_tm);
       stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
       std::string logString = stt + " " + messageInfo;
-      ofile << logString << std::endl;;
-      
+      std::cout << logString << std::endl;;
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
       }

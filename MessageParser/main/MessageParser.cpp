@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <unordered_set>
 #include <iostream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 #include <future>
@@ -76,8 +75,7 @@ void MessageParser::textAnalyserNewqRequest(
     newClient.socket();
     newClient.bind();
     newClient.connect();
-    string combinedString = messageHeader + " " 
-                            + " " + messageBody + 
+    string combinedString = messageHeader + " "  + messageBody + 
                             " " + messageId;
     newClient.send(combinedString); 
     newClient.close();
@@ -95,6 +93,7 @@ void MessageParser::attachmentAnalyserNewRequest(
 }
 
 void MessageParser::parseMessage(string mailData) {
+    sleep(40);
     string headers = mailData + "_NetworkHeaders";
     string sender = mailData + "_Sender";
     string messageHeader = mailData + "_MessageHeader";
@@ -107,7 +106,6 @@ void MessageParser::parseMessage(string mailData) {
         int i = 0;
         while (i < numberOfLinks) {
             string link = mailData + "_Link" + to_string(i);
-            std::cout << link << std::endl;
             links.insert(link);
             ++i;
         }
@@ -121,7 +119,6 @@ void MessageParser::parseMessage(string mailData) {
         int i = 0;
         while(i < numberOfAttachments) {
             string attachment = mailData + "_Attachment" + to_string(i);
-            std::cout << attachment << std::endl;
             attachments.insert(attachment);
             ++i;
         }
@@ -166,8 +163,6 @@ void MessageParser::runServer() {
     MPServer.socket();
     MPServer.bind();
     MPServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         MPServer.accept();
         string messageInfo = MPServer.recv();
@@ -176,7 +171,7 @@ void MessageParser::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             exit(0);
         }

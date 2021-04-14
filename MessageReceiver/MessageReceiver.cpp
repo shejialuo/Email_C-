@@ -2,7 +2,6 @@
 #include <iostream>
 #include <time.h>
 #include <algorithm>
-#include <fstream>
 
 MessageReceiver::MessageReceiver(int port): MRServer(port) {}
 
@@ -19,9 +18,6 @@ void MessageReceiver::runServer() {
     MRServer.socket();
     MRServer.bind();
     MRServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
-
     while(true) {
         MRServer.accept();
         std::string messageInfo = MRServer.recv();
@@ -30,7 +26,7 @@ void MessageReceiver::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         newMessage(messageInfo);
     }
 }

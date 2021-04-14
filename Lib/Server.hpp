@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <string>
 #include <unistd.h>
+#define BUFFSIZE 100000
 
 using std::string;
 
@@ -18,7 +19,7 @@ private:
     struct sockaddr_in serverAddr;
     struct sockaddr_in clientAddr;
     socklen_t addrLen;
-    char buff[BUFSIZ];
+    char buff[BUFFSIZE];
 public:
     Server(int port);
     int socket();

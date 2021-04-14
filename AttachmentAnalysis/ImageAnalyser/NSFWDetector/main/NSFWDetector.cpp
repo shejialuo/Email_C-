@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -36,8 +35,6 @@ void NSFWDetector::runServer() {
     NDServer.socket();
     NDServer.bind();
     NDServer.listen(5000);
-    ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         NDServer.accept();
         string messageInfo = NDServer.recv();
@@ -46,7 +43,7 @@ void NSFWDetector::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   
         }

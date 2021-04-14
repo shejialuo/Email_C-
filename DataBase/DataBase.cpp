@@ -3,7 +3,6 @@
 #include <iostream>
 #include <time.h>
 #include <algorithm>
-#include <fstream>
 #include <vector>
 #include <sstream>
 
@@ -34,10 +33,10 @@ void Database::insertMessageInformation(string ip, string messageId,
     startAnalysisTimes.emplace(messageId, stt);
     ++numberOfMessageInTheMonitoringWindow;
     Client newClient(ip, 8002,8001);
-    std::cout << newClient.socket();
-    std::cout << newClient.bind();
-    std::cout << newClient.connect();
-    std::cout << newClient.send("OK");
+    newClient.socket();
+    newClient.bind();
+    newClient.connect();
+    newClient.send("OK");
     newClient.close();
 }
 
@@ -125,10 +124,7 @@ void Database::runServer() {
     DBServer.socket();
     DBServer.bind();
     DBServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
-        cout << "hello world" << endl;
         DBServer.accept();
         string ip = inet_ntoa(DBServer.getClientAddr().sin_addr);
         string messageInfo = DBServer.recv();
@@ -137,7 +133,7 @@ void Database::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         vector<string> param;
         istringstream iss(messageInfo);
         string token;

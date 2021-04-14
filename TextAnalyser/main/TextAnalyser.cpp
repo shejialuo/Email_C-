@@ -1,7 +1,6 @@
 #include "TextAnalyser.hpp"
 #include <cstdlib>
 #include <iostream>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 #include <future>
@@ -18,7 +17,7 @@ public:
         SentimentAsyncCallServer.listen(5000);
     }
     void newRequest(string messageBody) {
-        Client newClient("192.168.90.100",8000,8001);
+        Client newClient("192.168.90.110",8000,8001);
         newClient.socket();
         newClient.bind();
         newClient.connect();
@@ -47,6 +46,7 @@ TextAnalyser::TextAnalyser(int serverPort): TAServer(serverPort) {
 
 void TextAnalyser::analyzeText(string messageHeader,
     string messageBody,string messageId) {
+    sleep(106);
     if(!messageHeader.empty()) {
         
     }
@@ -68,8 +68,6 @@ void TextAnalyser::runServer() {
     TAServer.socket();
     TAServer.bind();
     TAServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
         TAServer.accept();
         string messageInfo = TAServer.recv();
@@ -78,7 +76,7 @@ void TextAnalyser::runServer() {
         string stt = asctime(t_tm);
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
-        ofile << logString << std::endl;
+        std::cout << logString << std::endl;
         if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             exit(0);
         }

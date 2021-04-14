@@ -3,7 +3,6 @@
 #include <vector>
 #include <sstream>
 #include <cstdlib>
-#include <fstream>
 #include <time.h>
 #include <algorithm>
 
@@ -31,8 +30,6 @@ void AttachmentManager::runServer() {
     AMServer.socket();
     AMServer.bind();
     AMServer.listen(5000);
-    std::ofstream ofile;
-    ofile.open("./log.txt", ios::app);
     while(true) {
       AMServer.accept();
       string messageInfo = AMServer.recv();
@@ -41,7 +38,7 @@ void AttachmentManager::runServer() {
       string stt = asctime(t_tm);
       stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
       std::string logString = stt + " " + messageInfo;
-      ofile << logString << std::endl;;
+      std::cout << logString << std::endl;;
       
       if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
          exit(0);   

@@ -100,7 +100,12 @@ void MessageAnalyser_LoadBalancer::runServer() {
         stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
         std::string logString = stt + " " + messageInfo;
         ofile << logString << std::endl;
-        if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
+        if(strcmp(messageInfo.c_str(), "new connect") == 0) {
+            MessageAnalyserInterface newInstance {
+                inet_ntoa(MALBServer.getClientAddr().sin_addr)};
+            connectInstance(newInstance);
+        }
+        else if(strcmp(messageInfo.c_str(), "disconnect") == 0) {
             disconnectInstance();
         }
         else {

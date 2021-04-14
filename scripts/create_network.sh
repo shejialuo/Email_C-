@@ -33,4 +33,3 @@ sudo docker network create --subnet=192.168.102.0/24 maloadbalancer
 sudo docker network create --subnet=192.168.103.0/24 messageanalyser
 
 sudo docker network create --subnet=192.168.104.0/24 database
-

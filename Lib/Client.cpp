@@ -28,7 +28,9 @@ int Client::send(string messageInfo) {
     for(int i = 0; i < messageInfo.length(); i++) {
         buff[i] = messageInfo[i];
     }
-    return ::send(sockfd, buff, strlen(buff), 0);
+    int result = ::send(sockfd, buff, strlen(buff), 0);
+    memset(buff, '\0', sizeof(buff));
+    return result;
 }
 
 int Client::close() {
