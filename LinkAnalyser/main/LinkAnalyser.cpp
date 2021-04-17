@@ -16,7 +16,7 @@ LinkAnalyser::LinkAnalyser(int serverPort): LAServer(serverPort) {
 }
 
 void LinkAnalyser::analyzeLinks(string links, string messageId) {
-   sleep(20);
+   sleep(1);
    Client newClient("192.168.102.110",8000,8001);
    newClient.socket();
    newClient.bind();

@@ -16,7 +16,7 @@ SentimentAnalyser::SentimentAnalyser(int serverPort): SAServer(serverPort) {
 }
 
 void SentimentAnalyser::analyzeSentiment(string messageBody, string ip) {
-    sleep(106);
+    sleep(4);
     Client newClient(ip,8002,8001);
     newClient.socket();
     newClient.bind();

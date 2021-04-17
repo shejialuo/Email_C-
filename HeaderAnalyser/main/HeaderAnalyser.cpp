@@ -16,7 +16,7 @@ HeaderAnalyser::HeaderAnalyser(int serverPort): HAServer(serverPort) {
 }
 
 void HeaderAnalyser::analyzeHeaders(string headers, string messageId) {
-   sleep(40);
+   sleep(5);
    Client newClient("192.168.102.110",8000,8001);
    newClient.socket();
    newClient.bind();

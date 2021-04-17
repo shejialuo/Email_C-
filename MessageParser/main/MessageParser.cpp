@@ -93,7 +93,6 @@ void MessageParser::attachmentAnalyserNewRequest(
 }
 
 void MessageParser::parseMessage(string mailData) {
-    sleep(40);
     string headers = mailData + "_NetworkHeaders";
     string sender = mailData + "_Sender";
     string messageHeader = mailData + "_MessageHeader";

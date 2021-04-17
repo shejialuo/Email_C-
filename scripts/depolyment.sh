@@ -1,24 +1,5 @@
 #! /bin/bash
 
-# startLoadBalancer() {
-#     sudo docker start mploadbalancer
-#     sudo docker start haloadbalancer
-#     sudo docker start laloadbalancer
-#     sudo docker start taloadbalancer
-#     sudo docker start saloadbalancer
-#     sudo docker start vsloadbalancer
-#     sudo docker start amloadbalancer
-#     sudo docker start ialoadbalancer
-#     sudo docker start ndloadbalancer
-#     sudo docker start irloadbalancer
-#     sudo docker start maloadbalancer
-# }
-
-# startLoadBalancer
-
-
-# # #* 每一个负载均衡运行实例，运行数为一个
-
 MessageParser(){
     sudo docker container create --network messageparser \
         --name $1 message_parser

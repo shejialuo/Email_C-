@@ -46,7 +46,7 @@ TextAnalyser::TextAnalyser(int serverPort): TAServer(serverPort) {
 
 void TextAnalyser::analyzeText(string messageHeader,
     string messageBody,string messageId) {
-    sleep(106);
+    sleep(2);
     if(!messageHeader.empty()) {
         
     }
@@ -59,7 +59,7 @@ void TextAnalyser::analyzeText(string messageHeader,
     newClient.socket();
     newClient.bind();
     newClient.connect();
-    string results = "Texts " + resultOfSentiment + " " + messageId; 
+    string results = "Texts " + messageBody + resultOfSentiment + " " + messageId; 
     newClient.send(results);
     newClient.close();
 }
