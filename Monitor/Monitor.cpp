@@ -41,16 +41,25 @@ string Monitor::shellExecute(string& command) {
 }
 
 Monitor::Monitor() {
-    messageCounter = 0;
-    numberOfMessagesInAMonitorWindow = {
-        10, 10, 10, 10, 10, 10, 10,
-		30, 30, 30, 30, 30, 30, 30,
-		80, 80, 80, 80, 80, 80, 80,
-		160, 160, 160, 160, 160, 160, 160,
-		180, 180, 180, 180, 180, 180, 180,
-		100, 100, 100, 100, 100, 100, 100,
-		80, 80, 80, 80, 80, 80, 80,
-		60, 60, 60, 60, 60, 60, 60
+    messageCounter = -1;
+    // numberOfMessagesInAMonitorWindow = {
+    //     10, 10, 10, 10, 10, 10, 10,
+	// 	30, 30, 30, 30, 30, 30, 30,
+	// 	80, 80, 80, 80, 80, 80, 80,
+	// 	160, 160, 160, 160, 160, 160, 160,
+	// 	180, 180, 180, 180, 180, 180, 180,
+	// 	100, 100, 100, 100, 100, 100, 100,
+	// 	80, 80, 80, 80, 80, 80, 80,
+	// 	60, 60, 60, 60, 60, 60, 60
+    // };
+        numberOfMessagesInAMonitorWindow = {
+        10, 10, 10, 10, 10, 
+		80, 80, 80, 80, 80, 
+		160, 160, 160, 160, 160, 
+		180, 180, 180, 180, 180, 
+		100, 100, 100, 100, 100, 
+		80, 80, 80, 80, 80, 
+		60, 60, 60, 60, 60, 
     };
     monitorWindowDimension = 200;
     numberOfHedaerAnalyser = 1;
@@ -111,6 +120,7 @@ void Monitor::scaleHeaderAnalyser(string& dataBaseQuery, vector<string>& headerA
     string resultSplited = stringSplit(dataBaseQuery, 6,' ');
     int arriveNumber = stringFindNumber(resultSplited);
     int difference = messageCounter - arriveNumber;
+    cout << "目前未到达的HeaderAnalyserResults数目为：" << difference << endl;
     if( difference > 0) {
         int numberOfHeaderAnalyserInAMonitorTime = monitorWindowDimension / 5;
         double scaleUpNumber_ = static_cast<double>(difference) / 
@@ -127,6 +137,7 @@ void Monitor::scaleHeaderAnalyser(string& dataBaseQuery, vector<string>& headerA
             std::string logString = stt + " " + "创建了HeaderAnalyser" + to_string(i + numberOfHedaerAnalyser);
             std::cout << logString << std::endl;
         }
+        numberOfHedaerAnalyser += scaleUpNumber;
     }
     else {
         vector<int> headerAnalyserQuery_;
@@ -135,16 +146,28 @@ void Monitor::scaleHeaderAnalyser(string& dataBaseQuery, vector<string>& headerA
             headerAnalyserQuery_.push_back(stringFindNumber(stringSplited));
         }
         sort(headerAnalyserQuery_.begin(),headerAnalyserQuery_.end());
+        bool flag = true;
         for(int i = 0; i < headerAnalyserQuery_.size() - 1; i++) {
             if(headerAnalyserQuery_.at(i) + 1 != headerAnalyserQuery_.at(i+1)) {
-                return;
+                string command = "/home/shejialuo/Projects/Email_Microservices/scripts/HeaderAnalyser.sh headeranalyser"
+                             + to_string(++numberOfHedaerAnalyser);
+                shellExecute(command);
+                time_t now_time=time(NULL);  
+                tm*  t_tm = localtime(&now_time);  
+                string stt = asctime(t_tm);
+                stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+                std::string logString = stt + " " + "创建了HeaderAnalyser" + to_string(numberOfHedaerAnalyser);
+                std::cout << logString << std::endl;
+                flag = false;
             }
         }
+        if(!flag) return; 
         int messageNumber = numberOfMessagesInAMonitorWindow.at(index);
-        int numberRequired_ = messageNumber / (monitorWindowDimension / 5);
+        double numberRequired_ = static_cast<double>(messageNumber) / 
+                                static_cast<double>(monitorWindowDimension / 5);
         int numberRequired = ceil(numberRequired_);
         while(numberRequired < numberOfHedaerAnalyser) {
-            Client newClient("192.168.84.0",8000,8001);
+            Client newClient("192.168.84.110",8000,8001);
             newClient.socket();
             newClient.bind();
             newClient.connect();
@@ -167,6 +190,7 @@ void Monitor::scaleTextAnalyser(string& saQuery, vector<string>& textAnalyserQue
     string resultSplited = stringSplit(saQuery, 5,' ');
     int arriveNumber = stringFindNumber(resultSplited);
     int difference = messageCounter - arriveNumber;
+    cout << "目前未到达的TextAnalyserResults数目为：" << difference << endl;
     if( difference > 0) {
         int numberOfTextAnalyserInAMonitorTime = monitorWindowDimension / 2;
         double scaleUpNumber_ = static_cast<double>(difference) / 
@@ -183,6 +207,7 @@ void Monitor::scaleTextAnalyser(string& saQuery, vector<string>& textAnalyserQue
             std::string logString = stt + " " + "创建了TextAnalyser" + to_string(i + numberOfTextAnalyser);
             std::cout << logString << std::endl;
         }
+        numberOfTextAnalyser += scaleUpNumber;
     }
     else {
         vector<int> textAnalyserQuery_;
@@ -191,16 +216,28 @@ void Monitor::scaleTextAnalyser(string& saQuery, vector<string>& textAnalyserQue
             textAnalyserQuery_.push_back(stringFindNumber(stringSplited));
         }
         sort(textAnalyserQuery_.begin(),textAnalyserQuery_.end());
+        bool flag = true;
         for(int i = 0; i < textAnalyserQuery_.size() - 1; i++) {
             if(textAnalyserQuery_.at(i) + 1 != textAnalyserQuery_.at(i+1)) {
-                return;
+                string command = "/home/shejialuo/Projects/Email_Microservices/scripts/TextAnalyser.sh textanalyser"
+                                + to_string(++numberOfTextAnalyser);
+                shellExecute(command);
+                time_t now_time=time(NULL);  
+                tm*  t_tm = localtime(&now_time);  
+                string stt = asctime(t_tm);
+                stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+                std::string logString = stt + " " + "创建了TextAnalyser" + to_string(numberOfTextAnalyser);
+                std::cout << logString << std::endl;
+                flag = false;
             }
         }
+        if(!flag) return;
         int messageNumber = numberOfMessagesInAMonitorWindow.at(index);
-        int numberRequired_ = messageNumber / (monitorWindowDimension / 2);
+        double numberRequired_ = static_cast<double>(messageNumber) / 
+                              static_cast<double>(monitorWindowDimension / 2);
         int numberRequired = ceil(numberRequired_);
-        while(numberRequired < numberOfHedaerAnalyser) {
-            Client newClient("192.168.88.0",8000,8001);
+        while(numberRequired < numberOfTextAnalyser) {
+            Client newClient("192.168.88.110",8000,8001);
             newClient.socket();
             newClient.bind();
             newClient.connect();
@@ -223,13 +260,14 @@ void Monitor::scaleSentimentAnalyser(string& dataBaseQuery, vector<string>& sent
     string resultSplited = stringSplit(dataBaseQuery, 6,' ');
     int arriveNumber = stringFindNumber(resultSplited);
     int difference = messageCounter - arriveNumber;
+    cout << "目前未到达的SentimentAnalyserResults数目为：" << difference << endl;
     if( difference > 0) {
         int numberOfSentimentAnalyserInAMonitorTime = monitorWindowDimension / 4;
         double scaleUpNumber_ = static_cast<double>(difference) / 
                                 static_cast<double>(numberOfSentimentAnalyserInAMonitorTime);
         int scaleUpNumber = ceil(scaleUpNumber_);
         for(int i = 1; i <= scaleUpNumber; i++) {
-            string command = "/home/shejialuo/Projects/Email_Microservices/scripts/SentimentAnalyser.sh textanalyser"
+            string command = "/home/shejialuo/Projects/Email_Microservices/scripts/SentimentAnalyser.sh sentimentanalyser"
                              + to_string(i + numberOfSentimentAnalyser);
             shellExecute(command);
             time_t now_time=time(NULL);  
@@ -239,6 +277,7 @@ void Monitor::scaleSentimentAnalyser(string& dataBaseQuery, vector<string>& sent
             std::string logString = stt + " " + "创建了SentimentAnalyser" + to_string(i + numberOfSentimentAnalyser);
             std::cout << logString << std::endl;
         }
+        numberOfSentimentAnalyser += scaleUpNumber;
     }
     else {
         vector<int> sentimentAnalyserQuery_;
@@ -247,16 +286,28 @@ void Monitor::scaleSentimentAnalyser(string& dataBaseQuery, vector<string>& sent
             sentimentAnalyserQuery_.push_back(stringFindNumber(stringSplited));
         }
         sort(sentimentAnalyserQuery_.begin(),sentimentAnalyserQuery_.end());
+        bool flag = true;
         for(int i = 0; i < sentimentAnalyserQuery_.size() - 1; i++) {
             if(sentimentAnalyserQuery_.at(i) + 1 != sentimentAnalyserQuery_.at(i+1)) {
-                return;
+                string command = "/home/shejialuo/Projects/Email_Microservices/scripts/SentimentAnalyser.sh sentimentanalyser"
+                             + to_string(++numberOfSentimentAnalyser);
+                shellExecute(command);
+                time_t now_time=time(NULL);  
+                tm*  t_tm = localtime(&now_time);  
+                string stt = asctime(t_tm);
+                stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+                std::string logString = stt + " " + "创建了SentimentAnalyser" + to_string(numberOfSentimentAnalyser);
+                std::cout << logString << std::endl;;
+                flag = false;
             }
         }
+        if(!flag) return;
         int messageNumber = numberOfMessagesInAMonitorWindow.at(index);
-        int numberRequired_ = messageNumber / (monitorWindowDimension / 4);
+        double numberRequired_ = static_cast<double>(messageNumber) / 
+                              static_cast<double>(monitorWindowDimension / 4);
         int numberRequired = ceil(numberRequired_);
-        while(numberRequired < numberOfHedaerAnalyser) {
-            Client newClient("192.168.90.0",8000,8001);
+        while(numberRequired < numberOfSentimentAnalyser) {
+            Client newClient("192.168.90.110",8000,8001);
             newClient.socket();
             newClient.bind();
             newClient.connect();
@@ -280,6 +331,7 @@ void Monitor::scaleLinkAnalyser(string& dataBaseQuery, vector<string>& linkAnaly
     string result = stringSplit(resultSplited, 0, '_');
     int arriveNumber = stringFindNumber(result);
     int difference = messageCounter - arriveNumber;
+    cout << "目前未到达的LinkAnalyserResults数目为：" << difference << endl;
     if( difference > 0) {
         int numberOfLinkAnalyserInAMonitorTime = monitorWindowDimension / 5;
         double scaleUpNumber_ = static_cast<double>(difference) / 
@@ -296,6 +348,7 @@ void Monitor::scaleLinkAnalyser(string& dataBaseQuery, vector<string>& linkAnaly
             std::string logString = stt + " " + "创建了LinkAnalyser" + to_string(i + numberOfLinkAnalyser);
             std::cout << logString << std::endl;
         }
+        numberOfLinkAnalyser += scaleUpNumber;
     }
     else {
         vector<int> linkAnalyserQuery_;
@@ -305,15 +358,27 @@ void Monitor::scaleLinkAnalyser(string& dataBaseQuery, vector<string>& linkAnaly
             linkAnalyserQuery_.push_back(stringFindNumber(result));
         }
         sort(linkAnalyserQuery_.begin(),linkAnalyserQuery_.end());
+        bool flag = true;
         for(int i = 0; i < linkAnalyserQuery_.size() - 1; i++) {
             if(linkAnalyserQuery_.at(i) + 1 != linkAnalyserQuery_.at(i+1)) {
-                return;
+                string command = "/home/shejialuo/Projects/Email_Microservices/scripts/LinkAnalyser.sh linkanalyser"
+                             + to_string(++numberOfLinkAnalyser);
+                shellExecute(command);
+                time_t now_time=time(NULL);  
+                tm*  t_tm = localtime(&now_time);  
+                string stt = asctime(t_tm);
+                stt.erase(remove(stt.begin(), stt.end(), '\n'), stt.end());
+                std::string logString = stt + " " + "创建了LinkAnalyser" + to_string(numberOfLinkAnalyser);
+                std::cout << logString << std::endl;
+                flag = false;
             }
         }
+        if(!flag) return;
         int messageNumber = numberOfMessagesInAMonitorWindow.at(index);
-        int numberRequired_ = messageNumber / (monitorWindowDimension / 5);
+        double numberRequired_ = static_cast<double>(messageNumber) / 
+                                static_cast<double>(monitorWindowDimension / 5);
         int numberRequired = ceil(numberRequired_);
-        while(numberRequired < numberOfHedaerAnalyser) {
+        while(numberRequired < numberOfLinkAnalyser) {
             Client newClient("192.168.86.110",8000,8001);
             newClient.socket();
             newClient.bind();
@@ -355,7 +420,6 @@ void Monitor::run() {
         auto sentimentanalyserQuery = sentimentAnalyserQuery();
         auto linkanalyserQuery = linkAnalyserQuery();
 
-        
         auto ScaleHeaderAnalyser = async(launch::async,
                                         [&]{scaleHeaderAnalyser(headerAnalyserDataBaseQuery, headeranalyserQuery);});
         auto ScaleTextAnalyser = async(launch::async, 
